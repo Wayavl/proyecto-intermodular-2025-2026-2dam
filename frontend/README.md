@@ -1,4 +1,4 @@
-This is a Kotlin Multiplatform project targeting Android, Web, Desktop (JVM).
+This is a Kotlin Multiplatform project targeting Web, Desktop (JVM).
 
 * [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
   It contains several subfolders:
@@ -8,20 +8,6 @@ This is a Kotlin Multiplatform project targeting Android, Web, Desktop (JVM).
       the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
       Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
       folder is the appropriate location.
-
-### Build and Run Android Application
-
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
 
 ### Build and Run Desktop (JVM) Application
 
