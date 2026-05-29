@@ -1,0 +1,6 @@
+{
+  "language_name": "Español",
+  "subject": "WebGPU",
+  "name": "Lección 2: Tipos de Memoria en GPU",
+  "content_md": "# Tipos de Memoria en GPU\n\nEn WebGPU trabajamos con varios tipos de memoria que influyen en el rendimiento y la flexibilidad.\n\n## 1️⃣ VRAM (Video RAM)\n- Memoria dedicada a la GPU.\n- Altísima velocidad, ideal para texturas y render targets.\n\n## 2️⃣ Memoria unificada (Shared Memory)\n- Usada en dispositivos móviles y algunos ordenadores integrados.\n- CPU y GPU acceden a la misma región física, lo que permite transferencias de datos sin copias explícitas.\n\n## 3️⃣ Memoria de trabajo (Workgroup Memory)\n- Disponible dentro de los shaders (especialmente los de cómputo).\n- Muy rápida, pero de ámbito local a cada grupo de trabajo.\n\n```ts\n// Creación de un buffer de uso general (VRAM)\nconst device = await navigator.gpu.requestAdapter().then(a => a.requestDevice());\nconst uniformBuffer = device.createBuffer({\n  size: 64,\n  usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,\n});\n```\n\n> **Tip**: Elige el uso adecuado (`GPUBufferUsage`) según el tipo de memoria que necesites."
+}

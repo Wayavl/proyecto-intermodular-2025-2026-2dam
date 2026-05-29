@@ -1,0 +1,6 @@
+{
+  "language_name": "Español",
+  "subject": "WebGPU",
+  "name": "Lección 3: Mapeo y uso de Buffers",
+  "content_md": "# Mapeo y uso de Buffers\n\nLos *buffers* son la base para pasar datos a la GPU. En WebGPU podemos crear, mapear y actualizar buffers desde JavaScript.\n\n## Creación de un buffer\n```ts\nconst device = await navigator.gpu.requestAdapter().then(a => a.requestDevice());\nconst data = new Float32Array([0, 1, 2, 3]);\nconst buffer = device.createBuffer({\n  size: data.byteLength,\n  usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,\n  mappedAtCreation: true,\n});\nnew Float32Array(buffer.getMappedRange()).set(data);\nbuffer.unmap();\n```\n\n## Mapeo para escritura posterior\n```ts\n// Map a buffer for write\nawait buffer.mapAsync(GPUMapModeWrite);\nconst writeArray = new Float32Array(buffer.getMappedRange());\nwriteArray[0] = 42.0;\nbuffer.unmap();\n```\n\n> **Tip**: Usa `COPY_DST` cuando necesites copiar datos desde la CPU con `queue.writeBuffer` en vez de mapear."
+}

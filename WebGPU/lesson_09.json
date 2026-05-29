@@ -1,0 +1,6 @@
+{
+  "language_name": "Español",
+  "subject": "WebGPU",
+  "name": "Lección 9: Dispatch y Workgroups",
+  "content_md": "# Dispatch y Workgroups\n\nDespués de crear un *compute pipeline*, debes lanzar la ejecución con `dispatchWorkgroups`. Cada workgroup contiene varios *invocations* (hilos).\n\n## Sintaxis básica\n```ts\nconst encoder = device.createCommandEncoder();\nconst pass = encoder.beginComputePass();\npass.setPipeline(computePipeline);\npass.dispatchWorkgroups(32, 1, 1); // 32 grupos en X\npass.end();\ndevice.queue.submit([encoder.finish()]);\n```\n\n- `dispatchWorkgroups(x, y?, z?)` define cuántos grupos lanzar en cada dimensión.\n- El tamaño del workgroup se define en el shader con `[[workgroup_size(x, y, z)]]`.\n\n### Cálculo del número total de invocaciones\n```ts\nconst wgSize = 64; // definido en el shader\nconst totalElements = 1024;\nconst workgroups = Math.ceil(totalElements / wgSize);\npass.dispatchWorkgroups(workgroups);\n```\n\n> **Tip**: Mantén los tamaños de workgroup potencias de 2 (32, 64, 128) para mejor rendimiento."
+}

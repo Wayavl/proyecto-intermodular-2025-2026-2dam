@@ -1,0 +1,1690 @@
+{
+	"info": {
+		"_postman_id": "paralearn-api-v2",
+		"name": "Paralearn Backend API",
+		"description": "Colección actualizada: idiomas en/es/zh, configuraciones de usuario (idioma, notificaciones, telemetría, tema oscuro), progreso y matriculación.\n\nVariables de colección: `base_url`, `lang` (en|es|zh), `user_id`, `username`.\n\nTras **Login**, se guardan `user_id` y `username` automáticamente. La cookie `authorization` se gestiona con el jar de cookies de Postman.\n\nReferencia SQL: `docker/postgres/reference_queries.sql`\n\n**Runner:** carpeta `Run — Seed (1 of each)` — usuario `a` / `a@a.com` / `a` y un recurso de cada tipo.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000"
+		},
+		{
+			"key": "lang",
+			"value": "es"
+		},
+		{
+			"key": "user_id",
+			"value": ""
+		},
+		{
+			"key": "username",
+			"value": "a"
+		},
+		{
+			"key": "course_id",
+			"value": ""
+		},
+		{
+			"key": "lesson_id",
+			"value": ""
+		},
+		{
+			"key": "algorithm_id",
+			"value": ""
+		},
+		{
+			"key": "config_language_id",
+			"value": "00000000-0000-0000-0000-000000000001"
+		},
+		{
+			"key": "config_notifications_id",
+			"value": "00000000-0000-0000-0000-000000000002"
+		},
+		{
+			"key": "config_telemetry_id",
+			"value": "00000000-0000-0000-0000-000000000003"
+		},
+		{
+			"key": "config_theme_id",
+			"value": "00000000-0000-0000-0000-000000000004"
+		},
+		{
+			"key": "seed_lang_name",
+			"value": ""
+		},
+		{
+			"key": "run_config_id",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "Run — Seed (1 of each)",
+			"description": "Ejecuta esta carpeta con **Collection Runner** (orden secuencial).\n\n**Usuario final:** `a` / `a@a.com` / `a`\n\n**Admin temporal** (pasos 1–11): `admin` / `admin@paralearn.com` / `admin` — necesario para crear idioma, curso, algoritmo, etc.\n\nRequisitos: backend en `{{base_url}}`, Postgres con seed de `init.sql`.\n\nLos pasos 409 (ya existe) se consideran OK en register.",
+			"item": [
+				{
+					"name": "01 — Register admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Admin register (201 or 409)', () => {",
+									"  pm.expect([201, 409]).to.include(pm.response.code);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"email\": \"admin@paralearn.com\",\n  \"password\": \"admin\"\n}"
+						},
+						"url": "{{base_url}}/api/users/register"
+					}
+				},
+				{
+					"name": "02 — Login admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Admin login 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin\"\n}"
+						},
+						"url": "{{base_url}}/api/users/login"
+					}
+				},
+				{
+					"name": "03 — Create language",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.collectionVariables.set('seed_lang_name', 'e2e' + pm.variables.replaceIn('{{$randomInt}}'));"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Language created 201', () => pm.response.to.have.status(201));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{seed_lang_name}}\"\n}"
+						},
+						"url": "{{base_url}}/api/languages"
+					}
+				},
+				{
+					"name": "04 — Create algorithm",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Algorithm created 201', () => pm.response.to.have.status(201));",
+									"const b = pm.response.json();",
+									"if (b.algorithm_id) pm.collectionVariables.set('algorithm_id', b.algorithm_id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"is_premium\": false,\n  \"controls_yml\": \"threads:\\n  min: 1\\n  max: 8\\n  default: 2\\ndataset_size:\\n  min: 100\\n  max: 10000\\n  default: 1000\"\n}"
+						},
+						"url": "{{base_url}}/api/algorithms"
+					}
+				},
+				{
+					"name": "05 — Add algorithm translation (es)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Algorithm translation 201', () => pm.response.to.have.status(201));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"language_name\": \"es\",\n  \"title\": \"E2E Prefix Sum\",\n  \"subject\": \"GPU\",\n  \"explanation_md\": \"# Algoritmo de prueba\",\n  \"use_cases_md\": \"## Casos de uso\"\n}"
+						},
+						"url": "{{base_url}}/api/algorithms/{{algorithm_id}}/translations"
+					}
+				},
+				{
+					"name": "06 — Create course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Course created 201', () => pm.response.to.have.status(201));",
+									"const b = pm.response.json();",
+									"if (b.course_id) pm.collectionVariables.set('course_id', b.course_id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"is_premium\": false\n}"
+						},
+						"url": "{{base_url}}/api/courses"
+					}
+				},
+				{
+					"name": "07 — Add course translation (es)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Course translation 201', () => pm.response.to.have.status(201));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"language_name\": \"es\",\n  \"name\": \"E2E Curso Paralelo\",\n  \"description\": \"Curso creado por Collection Runner\"\n}"
+						},
+						"url": "{{base_url}}/api/courses/{{course_id}}/translations"
+					}
+				},
+				{
+					"name": "08 — Create lesson",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Lesson created 201', () => pm.response.to.have.status(201));",
+									"const b = pm.response.json();",
+									"if (b.lesson_id) pm.collectionVariables.set('lesson_id', b.lesson_id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"lesson_order\": 1,\n  \"algorithm_id\": \"{{algorithm_id}}\"\n}"
+						},
+						"url": "{{base_url}}/api/courses/{{course_id}}/lessons"
+					}
+				},
+				{
+					"name": "09 — Add lesson translation (es)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Lesson translation 201', () => pm.response.to.have.status(201));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"language_name\": \"es\",\n  \"subject\": \"Unidad 1\",\n  \"name\": \"Intro E2E\",\n  \"content_md\": \"# Lección\\n\\nContenido de prueba.\"\n}"
+						},
+						"url": "{{base_url}}/api/courses/lessons/{{lesson_id}}/translations"
+					}
+				},
+				{
+					"name": "10 — Create global configuration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Configuration created 201', () => pm.response.to.have.status(201));",
+									"const b = pm.response.json();",
+									"if (b.configuration_id) pm.collectionVariables.set('run_config_id', b.configuration_id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"BOOLEAN\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations"
+					}
+				},
+				{
+					"name": "11 — Add configuration translation (es)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Config translation 201', () => pm.response.to.have.status(201));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"language_name\": \"es\",\n  \"configuration_name\": \"Ajuste E2E Runner\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations/{{run_config_id}}/translations"
+					}
+				},
+				{
+					"name": "12 — Register user a",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.collectionVariables.set('username', 'a');"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('User a register (201 or 409)', () => {",
+									"  pm.expect([201, 409]).to.include(pm.response.code);",
+									"});",
+									"if (pm.response.code === 201) {",
+									"  const b = pm.response.json();",
+									"  const u = b.user || b;",
+									"  const id = u.user_id || u.id;",
+									"  if (id) pm.collectionVariables.set('user_id', id);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"a\",\n  \"email\": \"a@a.com\",\n  \"password\": \"a\"\n}"
+						},
+						"url": "{{base_url}}/api/users/register"
+					}
+				},
+				{
+					"name": "13 — Login user a",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('User a login 200', () => pm.response.to.have.status(200));",
+									"const b = pm.response.json();",
+									"const u = b.user || b;",
+									"const id = u.user_id || u.id;",
+									"if (id) pm.collectionVariables.set('user_id', id);",
+									"pm.collectionVariables.set('username', 'a');"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"a\",\n  \"password\": \"a\"\n}"
+						},
+						"url": "{{base_url}}/api/users/login"
+					}
+				},
+				{
+					"name": "14 — Set instruction language (es)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Set language 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"configuration_id\": \"{{config_language_id}}\",\n  \"value\": \"es\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations/{{user_id}}"
+					}
+				},
+				{
+					"name": "15 — Set dark theme (true)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Set theme 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"configuration_id\": \"{{config_theme_id}}\",\n  \"value\": \"true\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations/{{user_id}}"
+					}
+				},
+				{
+					"name": "16 — Set notifications (true)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Set notifications 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"configuration_id\": \"{{config_notifications_id}}\",\n  \"value\": \"true\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations/{{user_id}}"
+					}
+				},
+				{
+					"name": "17 — Set telemetry sync (true)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Set telemetry 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"configuration_id\": \"{{config_telemetry_id}}\",\n  \"value\": \"true\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations/{{user_id}}"
+					}
+				},
+				{
+					"name": "18 — Enroll user a in course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Enroll 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"course_id\": \"{{course_id}}\"\n}"
+						},
+						"url": "{{base_url}}/api/matriculate/enroll"
+					}
+				},
+				{
+					"name": "19 — Get profile (user a)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Profile 200', () => pm.response.to.have.status(200));",
+									"const b = pm.response.json();",
+									"const p = b.profile || b;",
+									"pm.test('Username is a', () => pm.expect(p.username).to.eql('a'));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/users/profile/a"
+					}
+				},
+				{
+					"name": "20 — Get courses (es)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Courses 200', () => pm.response.to.have.status(200));",
+									"const b = pm.response.json();",
+									"pm.test('Has at least one course', () => {",
+									"  const list = b.courses || b;",
+									"  pm.expect(Array.isArray(list) ? list.length : Object.keys(list).length).to.be.above(0);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses?lang=es",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "es"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "21 — Get algorithms (es)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Algorithms 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/algorithms?lang=es",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"algorithms"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "es"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "22 — Execute algorithm",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Execute 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"threads\": 2,\n  \"dataset_size\": 500\n}"
+						},
+						"url": "{{base_url}}/api/algorithms/execute/{{algorithm_id}}"
+					}
+				},
+				{
+					"name": "23 — Get user configurations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Configurations 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/configurations/{{user_id}}?lang=es",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"configurations",
+								"{{user_id}}"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "es"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "24 — Get enrollments",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Enrollments 200', () => pm.response.to.have.status(200));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/matriculate/{{user_id}}"
+					}
+				},
+				{
+					"name": "25 — Seed complete (summary)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Seed run finished', () => true);",
+									"console.log('=== Paralearn seed ===');",
+									"console.log('user: a / a@a.com / a');",
+									"console.log('user_id:', pm.collectionVariables.get('user_id'));",
+									"console.log('course_id:', pm.collectionVariables.get('course_id'));",
+									"console.log('lesson_id:', pm.collectionVariables.get('lesson_id'));",
+									"console.log('algorithm_id:', pm.collectionVariables.get('algorithm_id'));",
+									"console.log('seed_lang:', pm.collectionVariables.get('seed_lang_name'));",
+									"console.log('run_config_id:', pm.collectionVariables.get('run_config_id'));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/users/profile/a"
+					}
+				}
+			]
+		},
+		{
+			"name": "PostgreSQL — referencia rápida",
+			"description": "**Idiomas** (`language.language_name` = query `lang`):\n- `en` → `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`\n- `es` → `bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb`\n- `zh` → `cccccccc-cccc-cccc-cccc-cccccccccccc`\n\n**Configuraciones** (`configured.config_id`):\n| UUID | Tipo | Valores típicos |\n|------|------|------------------|\n| `00000000-0000-0000-0000-000000000001` | SELECTION | `en`, `es`, `zh` |\n| `00000000-0000-0000-0000-000000000002` | BOOLEAN | `true`, `false` |\n| `00000000-0000-0000-0000-000000000003` | BOOLEAN | `true`, `false` |\n| `00000000-0000-0000-0000-000000000004` | BOOLEAN | `true` = tema oscuro, `false` = tema claro |\n\nConsultas listas: `docker/postgres/reference_queries.sql`",
+			"item": []
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"demo\",\n  \"email\": \"demo@paralearn.com\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": "{{base_url}}/api/users/register"
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"  const body = pm.response.json();",
+									"  const user = body.user || body;",
+									"  if (user.user_id) pm.collectionVariables.set('user_id', user.user_id);",
+									"  if (user.username) pm.collectionVariables.set('username', user.username);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": "{{base_url}}/api/users/login"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/users/logout"
+					}
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/users/profile/{{username}}"
+					}
+				},
+				{
+					"name": "Update Username",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"new_username\": \"demo_renamed\"\n}"
+						},
+						"url": "{{base_url}}/api/users/{{username}}/username"
+					}
+				},
+				{
+					"name": "Update Email",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"new_email\": \"demo.new@paralearn.com\"\n}"
+						},
+						"url": "{{base_url}}/api/users/{{username}}/email"
+					}
+				},
+				{
+					"name": "Update Password",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"new_password\": \"123456\"\n}"
+						},
+						"url": "{{base_url}}/api/users/{{username}}/password"
+					}
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"url": "{{base_url}}/api/users/{{username}}"
+					}
+				}
+			]
+		},
+		{
+			"name": "Progress",
+			"item": [
+				{
+					"name": "Get Learned Algorithms",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/users/{{user_id}}/learned/algorithms?lang={{lang}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{user_id}}",
+								"learned",
+								"algorithms"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "{{lang}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Learned Lessons",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/users/{{user_id}}/learned/lessons?lang={{lang}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{user_id}}",
+								"learned",
+								"lessons"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "{{lang}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Course Progress",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/users/{{user_id}}/learned/courses?lang={{lang}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{user_id}}",
+								"learned",
+								"courses"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "{{lang}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Languages (Admin)",
+			"item": [
+				{
+					"name": "Get All Languages",
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/languages"
+					}
+				},
+				{
+					"name": "Create Language (zh)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"zh\"\n}"
+						},
+						"url": "{{base_url}}/api/languages"
+					}
+				},
+				{
+					"name": "Delete Language",
+					"request": {
+						"method": "DELETE",
+						"url": "{{base_url}}/api/languages/zh"
+					}
+				}
+			]
+		},
+		{
+			"name": "Algorithms",
+			"item": [
+				{
+					"name": "Get All Algorithms",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/algorithms?lang={{lang}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"algorithms"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "{{lang}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Algorithm by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/algorithms/{{algorithm_id}}?lang={{lang}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"algorithms",
+								"{{algorithm_id}}"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "{{lang}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Execute Algorithm",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"threads\": 4,\n  \"dataset_size\": 1000\n}"
+						},
+						"url": "{{base_url}}/api/algorithms/execute/{{algorithm_id}}"
+					}
+				},
+				{
+					"name": "Create Algorithm (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"is_premium\": false,\n  \"controls_yml\": \"threads:\\n  min: 1\\n  max: 8\\n  default: 4\"\n}"
+						},
+						"url": "{{base_url}}/api/algorithms"
+					}
+				},
+				{
+					"name": "Add Algorithm Translation (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"language_name\": \"{{lang}}\",\n  \"title\": \"Prefix Sum\",\n  \"subject\": \"GPU\",\n  \"explanation_md\": \"# Explanation\",\n  \"use_cases_md\": \"## Use cases\"\n}"
+						},
+						"url": "{{base_url}}/api/algorithms/{{algorithm_id}}/translations"
+					}
+				},
+				{
+					"name": "Update Algorithm Premium (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"is_premium\": true\n}"
+						},
+						"url": "{{base_url}}/api/algorithms/{{algorithm_id}}/premium"
+					}
+				},
+				{
+					"name": "Update Algorithm Controls (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"controls_yml\": \"threads:\\n  default: 8\"\n}"
+						},
+						"url": "{{base_url}}/api/algorithms/{{algorithm_id}}/controls"
+					}
+				},
+				{
+					"name": "Update Algorithm Translation (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Nuevo título\"\n}"
+						},
+						"url": "{{base_url}}/api/algorithms/{{algorithm_id}}/translations/{{lang}}"
+					}
+				},
+				{
+					"name": "Delete Algorithm (Admin)",
+					"request": {
+						"method": "DELETE",
+						"url": "{{base_url}}/api/algorithms/{{algorithm_id}}"
+					}
+				}
+			]
+		},
+		{
+			"name": "Courses & Lessons",
+			"item": [
+				{
+					"name": "Get All Courses",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses?lang={{lang}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "{{lang}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Course by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses/{{course_id}}?lang={{lang}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses",
+								"{{course_id}}"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "{{lang}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Course Lessons",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses/{{course_id}}/lessons?lang={{lang}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses",
+								"{{course_id}}",
+								"lessons"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "{{lang}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Lesson by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses/lessons/{{lesson_id}}?lang={{lang}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses",
+								"lessons",
+								"{{lesson_id}}"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "{{lang}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Course (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"is_premium\": false\n}"
+						},
+						"url": "{{base_url}}/api/courses"
+					}
+				},
+				{
+					"name": "Add Course Translation (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"language_name\": \"{{lang}}\",\n  \"name\": \"Parallel Programming 101\",\n  \"description\": \"Intro course\"\n}"
+						},
+						"url": "{{base_url}}/api/courses/{{course_id}}/translations"
+					}
+				},
+				{
+					"name": "Update Course Premium (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"is_premium\": true\n}"
+						},
+						"url": "{{base_url}}/api/courses/{{course_id}}/premium"
+					}
+				},
+				{
+					"name": "Update Course Translation (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"new_name\": \"Nuevo nombre\",\n  \"description\": \"Nueva descripción\"\n}"
+						},
+						"url": "{{base_url}}/api/courses/{{course_id}}/translations/{{lang}}"
+					}
+				},
+				{
+					"name": "Delete Course (Admin)",
+					"request": {
+						"method": "DELETE",
+						"url": "{{base_url}}/api/courses/{{course_id}}"
+					}
+				},
+				{
+					"name": "Create Lesson (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"lesson_order\": 1,\n  \"algorithm_id\": \"{{algorithm_id}}\"\n}"
+						},
+						"url": "{{base_url}}/api/courses/{{course_id}}/lessons"
+					}
+				},
+				{
+					"name": "Add Lesson Translation (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"language_name\": \"{{lang}}\",\n  \"subject\": \"Unit 1\",\n  \"name\": \"Introduction\",\n  \"content_md\": \"# Lesson\\n\\nContent here.\"\n}"
+						},
+						"url": "{{base_url}}/api/courses/lessons/{{lesson_id}}/translations"
+					}
+				},
+				{
+					"name": "Update Lesson Order (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"new_order\": 2\n}"
+						},
+						"url": "{{base_url}}/api/courses/lessons/{{lesson_id}}/order"
+					}
+				},
+				{
+					"name": "Update Lesson Algorithm (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"algorithm_id\": \"{{algorithm_id}}\"\n}"
+						},
+						"url": "{{base_url}}/api/courses/lessons/{{lesson_id}}/algorithm"
+					}
+				},
+				{
+					"name": "Update Lesson Translation (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"subject\": \"Tema\",\n  \"name\": \"Lección\",\n  \"content_md\": \"# MD\"\n}"
+						},
+						"url": "{{base_url}}/api/courses/lessons/{{lesson_id}}/translations/{{lang}}"
+					}
+				},
+				{
+					"name": "Delete Lesson (Admin)",
+					"request": {
+						"method": "DELETE",
+						"url": "{{base_url}}/api/courses/lessons/{{lesson_id}}"
+					}
+				}
+			]
+		},
+		{
+			"name": "Matriculate",
+			"item": [
+				{
+					"name": "Enroll User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"course_id\": \"{{course_id}}\"\n}"
+						},
+						"url": "{{base_url}}/api/matriculate/enroll"
+					}
+				},
+				{
+					"name": "Get User Enrollments",
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/matriculate/{{user_id}}"
+					}
+				},
+				{
+					"name": "Unenroll",
+					"request": {
+						"method": "DELETE",
+						"url": "{{base_url}}/api/matriculate/{{user_id}}/{{course_id}}"
+					}
+				},
+				{
+					"name": "Mark Course as Finished",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/matriculate/{{user_id}}/{{course_id}}/finish"
+					}
+				}
+			]
+		},
+		{
+			"name": "User Settings (Configurations)",
+			"description": "Mismos UUID que la app Android (`AppSettings`) y la tabla `configured`.",
+			"item": [
+				{
+					"name": "Get User Configurations",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/configurations/{{user_id}}?lang={{lang}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"configurations",
+								"{{user_id}}"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "{{lang}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Set Instruction Language (en|es|zh)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"configuration_id\": \"{{config_language_id}}\",\n  \"value\": \"zh\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations/{{user_id}}"
+					}
+				},
+				{
+					"name": "Set Dark Theme (true = oscuro)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"configuration_id\": \"{{config_theme_id}}\",\n  \"value\": \"true\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations/{{user_id}}"
+					}
+				},
+				{
+					"name": "Set Light Theme (false = claro)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"configuration_id\": \"{{config_theme_id}}\",\n  \"value\": \"false\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations/{{user_id}}"
+					}
+				},
+				{
+					"name": "Set Learning Notifications",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"configuration_id\": \"{{config_notifications_id}}\",\n  \"value\": \"true\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations/{{user_id}}"
+					}
+				},
+				{
+					"name": "Set Telemetry Sync",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"configuration_id\": \"{{config_telemetry_id}}\",\n  \"value\": \"true\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations/{{user_id}}"
+					}
+				},
+				{
+					"name": "Reset User Configuration",
+					"request": {
+						"method": "DELETE",
+						"url": "{{base_url}}/api/configurations/{{user_id}}/{{config_theme_id}}"
+					}
+				},
+				{
+					"name": "Create Global Config (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"BOOLEAN\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations"
+					}
+				},
+				{
+					"name": "Add Config Translation (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"language_name\": \"{{lang}}\",\n  \"configuration_name\": \"Mi ajuste\"\n}"
+						},
+						"url": "{{base_url}}/api/configurations/{{config_theme_id}}/translations"
+					}
+				},
+				{
+					"name": "Delete Global Config (Admin)",
+					"request": {
+						"method": "DELETE",
+						"url": "{{base_url}}/api/configurations/{{config_theme_id}}"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,8 @@
+package com.paralearn.android.data.settings
+
+object AppSettings {
+    const val LANGUAGE_ID = "00000000-0000-0000-0000-000000000001"
+    const val NOTIFICATIONS_ID = "00000000-0000-0000-0000-000000000002"
+    const val TELEMETRY_SYNC_ID = "00000000-0000-0000-0000-000000000003"
+    const val THEME_ID = "00000000-0000-0000-0000-000000000004"
+}

@@ -1,0 +1,6 @@
+{
+  "language_name": "Español",
+  "subject": "WebGPU",
+  "name": "Lección 1: Memoria en GPUs",
+  "content_md": "# Memoria en GPUs\n\nEn esta lección exploraremos cómo se gestiona la memoria en las GPU y cómo WebGPU la utiliza.\n\n## ¿Qué es la memoria de GPU?\n- **VRAM**: memoria dedicada a la GPU para almacenar texturas, buffers y resultados de cómputo.\n- **Memoria unificada**: en algunos dispositivos (p.ej., dispositivos móviles) la CPU y GPU comparten la misma memoria física.\n\n## Por qué es importante\nUna gestión eficiente de la memoria reduce los cuellos de botella y mejora el rendimiento de renderizado y cómputo.\n\n```ts\n// Ejemplo de creación de un buffer en WebGPU\nconst device = await navigator.gpu.requestAdapter().then(adapter => adapter.requestDevice());\nconst buffer = device.createBuffer({\n  size: 1024,\n  usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,\n});\n```\n\n> **Nota**: Asegúrate siempre de liberar los recursos cuando ya no los necesites."
+}

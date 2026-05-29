@@ -1,0 +1,9 @@
+{
+  "language_name": "Español",
+  "subject": "WebGPU",
+  "name": "Lección 5: Vertex y Fragment Shaders",
+  "content_md": "# Vertex y Fragment Shaders\n\nEn WebGPU los shaders se escriben en WGSL (WebGPU Shading Language). Los dos tipos principales son:\n\n- **Vertex Shader**: transforma vértices de modelo a espacio de pantalla.\n- **Fragment Shader**: calcula el color de cada fragmento (pixel).\n\n## Vertex Shader básico\n```ts\nconst vertexShader = /*wgsl*/`\n[[stage(vertex)]]\nfn main([[location(0)]] pos : vec4<f32>) -> [[builtin(position)]] vec4<f32> {\n  return pos;\n}\n`;
+```\n\n## Fragment Shader básico\n```ts\nconst fragmentShader = /*wgsl*/`\n[[stage(fragment)]]\nfn main() -> [[location(0)]] vec4<f32> {\n  return vec4<f32>(1.0, 0.0, 0.0, 1.0); // rojo\n}\n`;
+```\n\n> **Tip**: Usa `device.createShaderModule({code: vertexShader})` y `device.createShaderModule({code: fragmentShader})` para crear los módulos."
+  }
+

@@ -1,0 +1,104 @@
+<resources>
+    <string name="app_name">Paralearn</string>
+
+    <string name="nav_home">Inicio</string>
+    <string name="nav_courses">Cursos</string>
+    <string name="nav_algorithms">Algoritmos</string>
+    <string name="nav_profile">Perfil</string>
+
+    <string name="topbar_home">PARALEARN</string>
+    <string name="topbar_profile">PERFIL</string>
+    <string name="topbar_settings">AJUSTES</string>
+    <string name="topbar_catalog">CATÁLOGO</string>
+    <string name="topbar_algorithms">ALGORITMOS</string>
+
+    <string name="explorer">Explorador</string>
+    <string name="pro_badge">PRO</string>
+    <string name="enabled">Activado</string>
+    <string name="disabled">Desactivado</string>
+    <string name="saving">Guardando…</string>
+    <string name="saved">Guardado</string>
+    <string name="search">Buscar</string>
+
+    <string name="lang_english">English</string>
+    <string name="lang_spanish">Español</string>
+    <string name="lang_chinese">中文</string>
+
+    <string name="home_welcome_back">BIENVENIDO DE NUEVO</string>
+    <string name="home_hello">Hola, %1$s</string>
+    <string name="home_streak_subtitle">Mantén viva tu racha de cómputo paralelo.</string>
+    <string name="home_streak_label">RACHA</string>
+    <string name="home_streak_days_suffix"> DÍAS</string>
+    <string name="home_next_milestone">SIGUIENTE: %1$d DÍAS</string>
+    <string name="home_algorithms_learned">Algoritmos aprendidos</string>
+    <string name="home_algorithms_empty">Completa lecciones de cursos para desbloquear algoritmos aquí.</string>
+    <string name="home_courses_in_progress">Cursos en progreso</string>
+    <string name="home_courses_empty">Matricúlate en un curso del catálogo para empezar a aprender.</string>
+    <string name="home_completed_courses">Cursos completados</string>
+    <string name="home_completed_empty">Los cursos terminados aparecerán al final de tu panel.</string>
+    <string name="home_open_sandbox">ABRIR SANDBOX</string>
+    <string name="home_lessons_progress">%1$d/%2$d lecciones · %3$d%% completado</string>
+    <string name="home_completed_lessons">Completado · %1$d lecciones</string>
+
+    <string name="profile_no_email">Sin correo registrado</string>
+    <string name="profile_streak">Racha</string>
+    <string name="profile_member_since">Miembro desde</string>
+    <string name="profile_completed">Completados</string>
+    <string name="profile_streak_days">%1$d días</string>
+    <string name="profile_courses_in_progress">Cursos en progreso</string>
+    <string name="profile_account">Cuenta</string>
+    <string name="profile_settings">Ajustes</string>
+    <string name="profile_settings_subtitle">Idioma, notificaciones y sincronización</string>
+    <string name="profile_sign_out">Cerrar sesión</string>
+    <string name="profile_sign_out_subtitle">Finalizar sesión en este dispositivo</string>
+
+    <string name="settings_intro">Tus preferencias se guardan en el servidor y se restauran al iniciar sesión.</string>
+    <string name="settings_language_title">Idioma de instrucción</string>
+    <string name="settings_language_desc">Traducciones de cursos y algoritmos</string>
+    <string name="settings_notifications_title">Notificaciones de aprendizaje</string>
+    <string name="settings_notifications_desc">Recordatorios para mantener tu racha</string>
+    <string name="settings_telemetry_title">Sincronización de telemetría</string>
+    <string name="settings_telemetry_desc">Sincronizar métricas del sandbox con Wi‑Fi</string>
+    <string name="settings_theme_title">Tema oscuro</string>
+    <string name="settings_theme_desc">Desactiva para usar el tema claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="theme_light">Claro</string>
+    <string name="settings_resolve_user_error">No se pudo obtener el id de usuario para los ajustes.</string>
+    <string name="settings_save_failed">Error al guardar el ajuste</string>
+
+    <string name="catalog_tracks">RUTAS DE CÓMPUTO</string>
+    <string name="catalog_headline">Domina la programación masivamente paralela</string>
+    <string name="catalog_search_hint">Buscar cursos (p. ej. CUDA, concurrencia en Rust…)</string>
+    <string name="catalog_no_results">Ningún curso coincide con tu búsqueda.</string>
+
+    <string name="algorithms_labs">LABORATORIOS GPU</string>
+    <string name="algorithms_headline">Sandboxes interactivos de GPU paralela</string>
+    <string name="algorithms_search_hint">Buscar algoritmos (p. ej. prefix sum, memoria compartida…)</string>
+    <string name="algorithms_no_results">Ningún algoritmo coincide con tu búsqueda.</string>
+
+    <string name="auth_brand">PARALEARN</string>
+    <string name="auth_login_title">Bienvenido de nuevo</string>
+    <string name="auth_login_subtitle">Iniciar sesión</string>
+    <string name="auth_user_identifier">USUARIO O EMAIL</string>
+    <string name="auth_validate_pending"> </string>
+    <string name="auth_password">CONTRASEÑA</string>
+    <string name="auth_forgot_password">¿Olvidaste la contraseña?</string>
+    <string name="auth_log_in">INICIAR SESIÓN</string>
+    <string name="auth_system_status"> </string>
+    <string name="auth_no_account">¿No tienes cuenta?</string>
+    <string name="auth_sign_up">Regístrate</string>
+    <string name="auth_encrypted">CIFRADO AES-256</string>
+    <string name="auth_version">V4.0.2 NÚCLEO KINÉTICO</string>
+    <string name="auth_register_title">Crear cuenta</string>
+    <string name="auth_full_name">NOMBRE COMPLETO</string>
+    <string name="auth_email">CORREO ELECTRÓNICO</string>
+    <string name="auth_master_password">CONTRASEÑA MAESTRA</string>
+    <string name="auth_terms">Acepto los Términos y Condiciones y la Política de Privacidad.</string>
+    <string name="auth_register">Registrarse</string>
+    <string name="auth_has_account">¿Ya tienes cuenta?</string>
+    <string name="auth_log_in_link">Iniciar sesión</string>
+    <string name="auth_compute_node">NODO DE CÓMPUTO</string>
+    <string name="auth_reg_version">REG_V2.04_PRL</string>
+    <string name="auth_failed">Error de autenticación</string>
+    <string name="auth_registration_failed">Error en el registro</string>
+</resources>

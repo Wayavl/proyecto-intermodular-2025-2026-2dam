@@ -1,0 +1,6 @@
+{
+  "language_name": "Español",
+  "subject": "WebGPU",
+  "name": "Lección 4: Texturas y Samplers",
+  "content_md": "# Texturas y Samplers\n\nLas texturas son imágenes almacenadas en la GPU. WebGPU permite crear texturas 2D, 3D y de profundidad, y los *samplers* controlan cómo se filtran y repiten los datos.\n\n## Creación de una textura 2D\n```ts\nconst device = await navigator.gpu.requestAdapter().then(a => a.requestDevice());\nconst texture = device.createTexture({\n  size: {width: 256, height: 256, depthOrArrayLayers: 1},\n  format: 'rgba8unorm',\n  usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,\n});\n\n// Copiar datos a la textura\nconst imgData = new Uint8Array(256 * 256 * 4); // ejemplo de datos\ndevice.queue.writeTexture({\n  texture: texture,\n}, imgData, {bytesPerRow: 256 * 4}, {width: 256, height: 256, depthOrArrayLayers: 1});\n```\n\n## Sampler básico\n```ts\nconst sampler = device.createSampler({\n  magFilter: 'linear',\n  minFilter: 'linear',\n  addressModeU: 'repeat',\n  addressModeV: 'repeat',\n});\n```\n\n> **Tip**: Usa `GPUTextureUsage.RENDER_ATTACHMENT` si la textura será objetivo de renderizado.\n",
+  "StartLine": 1

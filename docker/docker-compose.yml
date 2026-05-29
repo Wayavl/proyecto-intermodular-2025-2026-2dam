@@ -1,0 +1,68 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: user_admin
+      POSTGRES_PASSWORD: mypassword123
+      POSTGRES_DB: paralearn
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.db:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+  
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    container_name: paralearn_backend
+    restart: always
+    # Removed the volume that overwrites /app. 
+    # If you need compiled assets or logs, map a specific subdirectory instead, like:
+    # volumes:
+    #   - ./dist/backend:/app/dist 
+    env_file:
+      - ../backend/.env
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  android_builder:
+     build: ../android
+     restart: no
+     volumes:
+       - ../android:/app
+       - ../dist:/dist
+
+  reverse_proxy:
+    image: nginx:alpine
+    container_name: nginx_reverse_proxy
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx.dev.conf:/etc/nginx/nginx.conf:ro"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  duckdns:
+    image: lscr.io/linuxserver/duckdns:latest
+    container_name: duckdns
+    environment:
+      - SUBDOMAINS=paralearn
+      - TOKEN=bee526c2-71cf-4593-a8a7-3d63c907d072
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

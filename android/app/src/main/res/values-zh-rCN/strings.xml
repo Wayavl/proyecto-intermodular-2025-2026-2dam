@@ -1,0 +1,104 @@
+<resources>
+    <string name="app_name">Paralearn</string>
+
+    <string name="nav_home">首页</string>
+    <string name="nav_courses">课程</string>
+    <string name="nav_algorithms">算法</string>
+    <string name="nav_profile">个人资料</string>
+
+    <string name="topbar_home">PARALEARN</string>
+    <string name="topbar_profile">个人资料</string>
+    <string name="topbar_settings">设置</string>
+    <string name="topbar_catalog">目录</string>
+    <string name="topbar_algorithms">算法</string>
+
+    <string name="explorer">探索者</string>
+    <string name="pro_badge">PRO</string>
+    <string name="enabled">已启用</string>
+    <string name="disabled">已禁用</string>
+    <string name="saving">保存中…</string>
+    <string name="saved">已保存</string>
+    <string name="search">搜索</string>
+
+    <string name="lang_english">English</string>
+    <string name="lang_spanish">Español</string>
+    <string name="lang_chinese">中文</string>
+
+    <string name="home_welcome_back">欢迎回来</string>
+    <string name="home_hello">你好，%1$s</string>
+    <string name="home_streak_subtitle">保持你的并行计算连续学习记录。</string>
+    <string name="home_streak_label">连续天数</string>
+    <string name="home_streak_days_suffix"> 天</string>
+    <string name="home_next_milestone">下一个目标：%1$d 天</string>
+    <string name="home_algorithms_learned">已学算法</string>
+    <string name="home_algorithms_empty">完成课程课时以在此解锁算法。</string>
+    <string name="home_courses_in_progress">进行中的课程</string>
+    <string name="home_courses_empty">从目录选课以开始学习。</string>
+    <string name="home_completed_courses">已完成的课程</string>
+    <string name="home_completed_empty">已完成的课程会显示在面板底部。</string>
+    <string name="home_open_sandbox">打开沙盒</string>
+    <string name="home_lessons_progress">%1$d/%2$d 课时 · 已完成 %3$d%%</string>
+    <string name="home_completed_lessons">已完成 · %1$d 课时</string>
+
+    <string name="profile_no_email">未登记邮箱</string>
+    <string name="profile_streak">连续天数</string>
+    <string name="profile_member_since">加入时间</string>
+    <string name="profile_completed">已完成</string>
+    <string name="profile_streak_days">%1$d 天</string>
+    <string name="profile_courses_in_progress">进行中的课程</string>
+    <string name="profile_account">账户</string>
+    <string name="profile_settings">设置</string>
+    <string name="profile_settings_subtitle">语言、通知与同步</string>
+    <string name="profile_sign_out">退出登录</string>
+    <string name="profile_sign_out_subtitle">在此设备上结束会话</string>
+
+    <string name="settings_intro">你的偏好设置会保存在服务器上，登录后会自动恢复。</string>
+    <string name="settings_language_title">教学语言</string>
+    <string name="settings_language_desc">课程与算法的翻译语言</string>
+    <string name="settings_notifications_title">学习通知</string>
+    <string name="settings_notifications_desc">提醒你保持连续学习记录</string>
+    <string name="settings_telemetry_title">遥测同步</string>
+    <string name="settings_telemetry_desc">在 Wi‑Fi 下同步沙盒指标</string>
+    <string name="settings_theme_title">深色主题</string>
+    <string name="settings_theme_desc">关闭以使用浅色主题</string>
+    <string name="theme_dark">深色</string>
+    <string name="theme_light">浅色</string>
+    <string name="settings_resolve_user_error">无法获取用于设置的用户 ID。</string>
+    <string name="settings_save_failed">保存设置失败</string>
+
+    <string name="catalog_tracks">计算学习路径</string>
+    <string name="catalog_headline">掌握大规模并行编程</string>
+    <string name="catalog_search_hint">搜索课程（例如 CUDA、Rust 并发…）</string>
+    <string name="catalog_no_results">没有与你的搜索匹配的课程。</string>
+
+    <string name="algorithms_labs">GPU 内核实验室</string>
+    <string name="algorithms_headline">交互式 GPU 并行沙盒</string>
+    <string name="algorithms_search_hint">搜索算法（例如前缀和、共享内存…）</string>
+    <string name="algorithms_no_results">没有与你的搜索匹配的算法。</string>
+
+    <string name="auth_brand">PARALEARN</string>
+    <string name="auth_login_title">欢迎回来</string>
+    <string name="auth_login_subtitle">初始化安全计算会话</string>
+    <string name="auth_user_identifier">用户标识</string>
+    <string name="auth_validate_pending">待验证</string>
+    <string name="auth_password">访问协议</string>
+    <string name="auth_forgot_password">忘记密码？</string>
+    <string name="auth_log_in">登录</string>
+    <string name="auth_system_status">系统状态：运行中</string>
+    <string name="auth_no_account">还没有账户？</string>
+    <string name="auth_sign_up">注册</string>
+    <string name="auth_encrypted">AES-256 加密</string>
+    <string name="auth_version">V4.0.2 动能核心</string>
+    <string name="auth_register_title">创建账户</string>
+    <string name="auth_full_name">全名</string>
+    <string name="auth_email">电子邮箱</string>
+    <string name="auth_master_password">主密码</string>
+    <string name="auth_terms">我同意服务条款和隐私政策。</string>
+    <string name="auth_register">注册</string>
+    <string name="auth_has_account">已有账户？</string>
+    <string name="auth_log_in_link">登录</string>
+    <string name="auth_compute_node">计算节点</string>
+    <string name="auth_reg_version">REG_V2.04_PRL</string>
+    <string name="auth_failed">身份验证失败</string>
+    <string name="auth_registration_failed">注册失败</string>
+</resources>

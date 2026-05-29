@@ -1,0 +1,6 @@
+{
+  "language_name": "Español",
+  "subject": "WebGPU",
+  "name": "Lección 7: Compute Shaders y Kernels",
+  "content_md": "# Compute Shaders y Kernels\n\nLos *compute shaders* permiten ejecutar código de cómputo general en la GPU. En WebGPU se escribe en WGSL y se despacha con `dispatch`.\n\n## Creación de un Compute Shader simple\n```ts\nconst computeShader = /*wgsl*/`\n[[stage(compute), workgroup_size(64)]]\nfn main([[builtin(global_invocation_id)]] id : vec3<u32>) {\n  // Operación de ejemplo\n}`;\n```\n\n## Configuración del pipeline de cómputo\n```ts\nconst shaderModule = device.createShaderModule({code: computeShader});\nconst computePipeline = device.createComputePipeline({\n  compute: {module: shaderModule, entryPoint: 'main'}\n});\n```\n\n## Despacho del Compute Shader\n```ts\nconst commandEncoder = device.createCommandEncoder();\nconst passEncoder = commandEncoder.beginComputePass();\npassEncoder.setPipeline(computePipeline);\npassEncoder.dispatchWorkgroups(256); // 256 grupos de trabajo\npassEncoder.end();\ndevice.queue.submit([commandEncoder.finish()]);\n```\n\n> **Tip**: Ajusta `workgroup_size` según la cantidad de datos y la arquitectura de la GPU."
+  },

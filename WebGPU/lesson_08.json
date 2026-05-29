@@ -1,0 +1,8 @@
+{
+  "language_name": "Español",
+  "subject": "WebGPU",
+  "name": "Lección 8: Render Pipeline",
+  "content_md": "# Render Pipeline\n\nEn WebGPU, el *render pipeline* combina vertex y fragment shaders y describe cómo se dibujan los triángulos.\n\n## Definir shaders WGSL\n```ts\nconst vertexWGSL = /*wgsl*/`\n[[stage(vertex)]]\nfn main([[location(0)]] pos : vec4<f32>) -> [[builtin(position)]] vec4<f32> {\n  return pos;\n}\n`;
+const fragmentWGSL = /*wgsl*/`\n[[stage(fragment)]]\nfn main() -> [[location(0)]] vec4<f32> {\n  return vec4<f32>(0.0, 0.5, 1.0, 1.0); // azul\n}\n`;
+```\n\n## Crear módulos y pipeline\n```ts\nconst device = await navigator.gpu.requestAdapter().then(a => a.requestDevice());\nconst vsModule = device.createShaderModule({code: vertexWGSL});\nconst fsModule = device.createShaderModule({code: fragmentWGSL});\n\nconst pipeline = device.createRenderPipeline({\n  vertex: {module: vsModule, entryPoint: 'main'},\n  fragment: {module: fsModule, entryPoint: 'main', targets: [{format: 'bgra8unorm'}]},\n  primitive: {topology: 'triangle-list'},\n});\n```\n\n## Uso en un render pass\n```ts\nconst commandEncoder = device.createCommandEncoder();\nconst textureView = context.getCurrentTexture().createView();\nconst pass = commandEncoder.beginRenderPass({colorAttachments: [{view: textureView, loadOp: 'clear', clearValue: {r:0,g:0,b:0,a:1}, storeOp: 'store'}]});\npass.setPipeline(pipeline);\npass.draw(3, 1, 0, 0); // dibuja un triángulo\npass.end();\ndevice.queue.submit([commandEncoder.finish()]);\n```\n\n> **Tip**: Usa `pipeline.getBindGroupLayout(0)` para conectar bind groups al pipeline."
+}
